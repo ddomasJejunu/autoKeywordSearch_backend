@@ -5,7 +5,8 @@ from ckeditor_uploader.fields import RichTextUploadingField
 # Create your models here.
 # maria db 연동 - https://lsjsj92.tistory.com/480
 class User(models.Model):
-    id = models.CharField(primary_key=True, max_length=255)
+    no = models.AutoField(primary_key=True)
+    id = models.CharField(unique=True, max_length=20)
     email = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
@@ -16,8 +17,8 @@ class Blog(models.Model):
     no = models.AutoField(primary_key=True)
     title = models.CharField(max_length=100)
     pub_date = models.DateTimeField(auto_now_add=True)
-    author = models.ForeignKey('User', models.DO_NOTHING, db_column='author', null=True, default=1)
-    body = RichTextUploadingField(blank=True, null=True)
+    author = models.ForeignKey('User', models.DO_NOTHING, db_column='author', blank=True, null=True)
+    body = models.TextField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -25,7 +26,7 @@ class Blog(models.Model):
 
 class Comment(models.Model):
     no = models.AutoField(primary_key=True)
-    blog = models.ForeignKey(Blog, models.DO_NOTHING, db_column='blog', null=True)
+    blog = models.ForeignKey(Blog, models.DO_NOTHING, db_column='blog', blank=True, null=True)
     comment_date = models.DateTimeField(auto_now_add=True)
     comment_user = models.TextField(max_length=20)
     comment_thumbnail_url = models.TextField(max_length=300)
