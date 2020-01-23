@@ -1,0 +1,127 @@
+{% load static %}
+<!doctype html>
+<html lang="ko">
+<head>
+  <title>Kakao Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+  <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      Kakao.init("fd8be3a3c1d49dabbf0059cb01dd2c50"); // JavaScript 키
+
+      function getKakaotalkUserProfile() {
+        return new Promise(function (resolve, reject) {
+          Kakao.API.request({
+          url: '/v2/user/me',
+          success: function (res) {
+            resolve(res)
+            // console.log("사용자 정보");
+            // console.log(res);
+            /*
+              https://developers.kakao.com/docs/restapi/tool#user-api
+              id: User의 고유 ID, signed int64
+              kaccount_email: User의 Email
+              properties: nickname, profile_image(url), thumbnail_image(url) 등
+              access_token: Login을 위한 token
+              refresh_token: 만료된 access_token을 재발급 받기 위한 token
+            */
+          },
+          fail: function (error) {
+            reject(error)
+          }
+        });
+        })
+      }
+
+      function createKakaotalkLogin() {
+        $("#kakao-logged-group .kakao-logout-btn,#kakao-logged-group .kakao-login-btn").remove();
+        var loginBtn = $("<a/>", {
+          "class": "kakao-login-btn",
+          "text": "로그인"
+        });
+        loginBtn.click(function () {
+          Kakao.Auth.login({
+            persistAccessToken: true,
+            persistRefreshToken: true,
+            success: function (authObj) {
+              createKakaotalkLogout();
+              getKakaotalkUserProfile();
+            },
+            fail: function (err) {
+              console.log(err);
+            }
+          });
+        });
+        $("#kakao-logged-group").prepend(loginBtn)
+      }
+
+      function createKakaotalkLogout() {
+        $("#kakao-logged-group .kakao-logout-btn,#kakao-logged-group .kakao-login-btn").remove();
+        var logoutBtn = $("<a/>", {
+          "class": "kakao-logout-btn",
+          "text": "로그아웃"
+        });
+        logoutBtn.click(function () {
+          Kakao.Auth.logout();
+          createKakaotalkLogin();
+          $("#kakao-profile").text("");
+        });
+        $("#kakao-logged-group").prepend(logoutBtn);
+      }
+
+      Kakao.Auth.getStatusInfo(function (statusObj) {
+        if (statusObj.status !== 'connected') {
+          createKakaotalkLogin();
+        } else {
+          createKakaotalkLogout();
+        }
+      })
+    });
+  </script>
+</head>
+<body>
+  <div id="kakao-logged-group"></div>
+</body>
+</html>
+
+<!-- <!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/cover.css' %}">
+    <title>Document</title>
+</head>
+<body class="text-center">
+    <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+        <header class="masthead mb-auto">
+          <div class="inner">
+            <h3 class="masthead-brand">Cover</h3>
+            <nav class="nav nav-masthead justify-content-center">
+              <a class="nav-link active" href="#">Home</a>
+              <a class="nav-link" href="#">Features</a>
+              <a class="nav-link" href="#">Contact</a>
+            </nav>
+          </div>
+        </header>
+      
+        <main role="main" class="inner cover">
+          <h1 class="cover-heading">Cover your page.</h1>
+          <p class="lead">Cover is a one-page template for building simple and beautiful home pages. Download, edit the text, and add your own fullscreen background photo to make it your own.</p>
+          <p class="lead">
+            <a href="{% url 'blogMain' %}" class="btn btn-lg btn-secondary">Learn more</a>
+          </p>
+        </main>
+      
+        <footer class="mastfoot mt-auto">
+          <div class="inner">
+            <p>Cover template for <a href="https://getbootstrap.com/">Bootstrap</a>, by <a href="https://twitter.com/mdo">@mdo</a>.</p>
+          </div>
+        </footer>
+      </div>
+</body>
+</html> -->

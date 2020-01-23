@@ -38,7 +38,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api',
     'web',
+    'oauth',
+    'temp',
+    'ckeditor',
+    'ckeditor_uploader',
 ]
+
+CKEDITOR_UPLOAD_PATH= "uploads/"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -110,7 +116,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
-LANGUAGE_CODE = 'ko'
+LANGUAGE_CODE = 'ko-kr'
 
 TIME_ZONE = 'Asia/Seoul'
 
@@ -126,3 +132,6 @@ USE_TZ = False # 한국 시간으로 저장하기 - https://jupiny.com/2016/10/0
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+MEDIA_URL = '/media/'
+MEDIA_TOOT = os.path.join(BASE_DIR, 'media')
