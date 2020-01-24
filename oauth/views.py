@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.core.exceptions import ObjectDoesNotExist
+from .models import User
 import requests
 import json
 
@@ -58,12 +60,23 @@ def kakaoLogin(request):
             nick_name = user_account_info['profile']['nickname']
             is_user_email = False
             user_email = None
+
             try:
                 if not user_account_info['email_needs_agreement'] and user_account_info['is_email_valid'] and user_account_info['is_email_verified']:
                     is_user_email = True
                     user_email = user_info['kakao_account']['email']
             except:
                 pass
+
+            is_regist = True
+
+            try:
+                User.objects.get(id=user_id)
+                is_regist = False
+            except ObjectDoesNotExist:
+                # django model에 바로 데이터 추가 - https://jay-ji.tistory.com/19
+                user = User(id=user_id, email=user_email)
+                user.save()
             
             return JsonResponse({
                 'success': True,
@@ -72,6 +85,7 @@ def kakaoLogin(request):
                 'nickName': nick_name,
                 'isUserEmail': is_user_email,
                 'userEmail': user_email,
+                'isRegist': is_regist
             }, json_dumps_params = { 'ensure_ascii': True })
         except KeyError:
             pass
