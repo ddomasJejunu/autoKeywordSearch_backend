@@ -5,7 +5,7 @@ import requests
 import json
 
 # Create your views here.
-def getKakaotalkUserProfile(access_token):
+def getKakaoUserInfo(access_token):
     headers = {
         'Content-Type': "application/x-www-form-urlencoded;charset=utf-8",
         'Authorization': f"Bearer {access_token}",
@@ -17,6 +17,7 @@ def getKakaotalkUserProfile(access_token):
 
     return response
 
+# django view.py response 방식 - https://wayhome25.github.io/django/2017/03/19/django-ep3-fbv/
 def kakaoGetCode(request):
     try:
         code = request.GET['code']
@@ -30,6 +31,7 @@ def kakaoGetCode(request):
             'success': False,
         }, json_dumps_params = { 'ensure_ascii': True })
 
+# django post 데이터 받기 - https://stackoverflow.com/questions/17716624/django-csrf-cookie-not-set
 @csrf_exempt
 def kakaoLogin(request):
     if request.method == "POST":
@@ -50,15 +52,26 @@ def kakaoLogin(request):
         try:
             access_token = json_data['access_token']
 
-            user_profile_info = getKakaotalkUserProfile(access_token)
-            user_id = user_profile_info['id']
-            nick_name = user_profile_info['kakao_account']['profile']['nickname']
+            user_info = getKakaoUserInfo(access_token)
+            user_id = user_info['id']
+            user_account_info = user_info['kakao_account']
+            nick_name = user_account_info['profile']['nickname']
+            is_user_email = False
+            user_email = None
+            try:
+                if not user_account_info['email_needs_agreement'] and user_account_info['is_email_valid'] and user_account_info['is_email_verified']:
+                    is_user_email = True
+                    user_email = user_info['kakao_account']['email']
+            except:
+                pass
             
             return JsonResponse({
                 'success': True,
                 'kakaoAccessToken': access_token,
                 'userID': user_id,
                 'nickName': nick_name,
+                'isUserEmail': is_user_email,
+                'userEmail': user_email,
             }, json_dumps_params = { 'ensure_ascii': True })
         except KeyError:
             pass
