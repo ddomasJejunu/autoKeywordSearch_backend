@@ -1,3 +1,44 @@
 from django.shortcuts import render
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.core.exceptions import ObjectDoesNotExist
+from .models import User, Keywordsearch
 
 # Create your views here.
+# rest_framework 없이 rest api 작성 - https://cholol.tistory.com/468?category=739855
+def create(request):
+    return JsonResponse({
+        'success': False,
+    }, json_dumps_params = { 'ensure_ascii': True })
+
+@csrf_exempt
+def search_list(request):
+    if request.method == 'POST':
+        user_no = -1
+        try:
+            user_no = User.objects.get(id=request.POST['userID']).no
+        except ObjectDoesNotExist:
+            pass
+            
+        search_list = list(Keywordsearch.objects.filter(user_no=user_no).values('no', 'search_url', 'keywords', 'start_time', 'end_time', 'complete_time'))
+        count = len(search_list)
+
+        return JsonResponse({
+            'success': True,
+            'count': count,
+            'searchList': search_list,
+        }, json_dumps_params = { 'ensure_ascii': True })
+
+    return JsonResponse({
+        'success': False,
+    }, json_dumps_params = { 'ensure_ascii': True })
+
+def update(request):
+    return JsonResponse({
+        'success': False,
+    }, json_dumps_params = { 'ensure_ascii': True })
+
+def delete(request):
+    return JsonResponse({
+        'success': False,
+    }, json_dumps_params = { 'ensure_ascii': True })
