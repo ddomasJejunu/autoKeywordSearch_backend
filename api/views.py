@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist
 from .models import User, Keywordsearch
+from datetime import datetime
 
 # Create your views here.
 # rest_framework 없이 rest api 작성 - https://cholol.tistory.com/468?category=739855
@@ -21,6 +22,10 @@ def search_list(request):
             pass
             
         search_list = list(Keywordsearch.objects.filter(user_no=user_no).values('no', 'search_url', 'keywords', 'start_time', 'end_time', 'complete_time'))
+        for item in search_list:
+            for key in item:
+                if type(item[key]) is datetime:
+                    item[key] = item[key].strftime('%Y/%m/%d %H:%M:%S')
         count = len(search_list)
 
         return JsonResponse({
