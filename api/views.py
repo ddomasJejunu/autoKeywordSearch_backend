@@ -7,7 +7,21 @@ from datetime import datetime
 
 # Create your views here.
 # rest_framework 없이 rest api 작성 - https://cholol.tistory.com/468?category=739855
+@csrf_exempt
 def create(request):
+    if request.method == 'POST':
+        search_url = request.POST['searchURL']
+        keywords = request.POST['keywords']
+        user_id = request.POST['userID']
+        end_time = datetime.strptime(request.POST['endTime'], "%Y-%m-%d %H:%M")
+
+        if (datetime.now() < end_time):
+            Keywordsearch.objects.create(search_url=search_url, keywords=keywords, user_no=User.objects.get(id=user_id), end_time=end_time)
+
+            return JsonResponse({
+                'success': True,
+            }, json_dumps_params = { 'ensure_ascii': True })
+
     return JsonResponse({
         'success': False,
     }, json_dumps_params = { 'ensure_ascii': True })
