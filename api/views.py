@@ -7,6 +7,7 @@ from datetime import datetime
 
 # Create your views here.
 # rest_framework 없이 rest api 작성 - https://cholol.tistory.com/468?category=739855
+# CRUD 기능 - https://wayhome25.github.io/django/2017/04/01/django-ep9-crud/
 @csrf_exempt
 def create(request):
     if request.method == 'POST':
@@ -29,17 +30,18 @@ def create(request):
 @csrf_exempt
 def search_list(request):
     if request.method == 'POST':
-        user_no = -1
-        try:
-            user_no = User.objects.get(id=request.POST['userID']).no
-        except ObjectDoesNotExist:
-            pass
-            
-        search_list = list(Keywordsearch.objects.filter(user_no=user_no).values('no', 'search_url', 'keywords', 'start_time', 'end_time', 'complete_time'))
-        for item in search_list:
-            for key in item:
-                if type(item[key]) is datetime:
-                    item[key] = item[key].strftime('%Y/%m/%d %H:%M:%S')
+        # select
+        if request.POST.get('userID', None):
+            search_list = list(Keywordsearch.objects.filter(user_no=User.objects.get(id=request.POST['userID'])).values('no', 'search_url', 'keywords', 'start_time', 'end_time', 'complete_time'))
+
+            for item in search_list:
+                for key in item:
+                    if type(item[key]) is datetime:
+                        item[key] = item[key].strftime('%Y/%m/%d %H:%M')
+        # update
+        elif request.POST.get('no', None):
+            search_list = list(Keywordsearch.objects.filter(no=request.POST["no"]).values('search_url', 'keywords', 'end_time'))
+        
         count = len(search_list)
 
         return JsonResponse({
@@ -52,7 +54,21 @@ def search_list(request):
         'success': False,
     }, json_dumps_params = { 'ensure_ascii': True })
 
+@csrf_exempt
 def update(request):
+    if request.method == 'POST':
+        searching_no = request.POST['no']
+        search_url = request.POST['searchURL']
+        keywords = request.POST['keywords']
+        end_time = datetime.strptime(request.POST['endTime'], "%Y-%m-%d %H:%M")
+
+        if (datetime.now() < end_time):
+            Keywordsearch.objects.filter(no=no).update(search_url=search_url, keywords=keywords, end_time=end_time)
+
+            return JsonResponse({
+                'success': True,
+            }, json_dumps_params = { 'ensure_ascii': True })
+
     return JsonResponse({
         'success': False,
     }, json_dumps_params = { 'ensure_ascii': True })
