@@ -57,7 +57,21 @@ def update(request):
         'success': False,
     }, json_dumps_params = { 'ensure_ascii': True })
 
+@csrf_exempt
 def delete(request):
+    if request.method == 'POST':
+        no_list = request.POST['no'].split(',')
+        
+        for no in no_list:
+            try:
+                Keywordsearch.objects.get(no=no).delete()
+            except Exception:
+                pass
+
+        return JsonResponse({
+            'success': True,
+        }, json_dumps_params = { 'ensure_ascii': True })
+
     return JsonResponse({
         'success': False,
     }, json_dumps_params = { 'ensure_ascii': True })
