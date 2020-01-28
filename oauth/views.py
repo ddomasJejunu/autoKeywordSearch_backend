@@ -68,11 +68,11 @@ def kakaoLogin(request):
             except:
                 pass
 
-            is_regist = True
+            is_regist = False
 
             try:
                 User.objects.get(id=user_id)
-                is_regist = False
+                is_regist = True
             except ObjectDoesNotExist:
                 # django model에 바로 데이터 추가 - https://jay-ji.tistory.com/19
                 user = User(id=user_id, email=user_email)
