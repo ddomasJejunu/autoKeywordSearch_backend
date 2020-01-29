@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'api',
     'web',
     'oauth',
+    'send',
     'temp',
     'ckeditor',
     'ckeditor_uploader',
@@ -88,7 +89,10 @@ DATABASES = {
         'PASSWORD': '',
         'HOST': '',
         'PORT': '',
-    }
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+        },
+    },
 
     # host 공백일 경우 localhost, port 공백일 경우 3306
 }
