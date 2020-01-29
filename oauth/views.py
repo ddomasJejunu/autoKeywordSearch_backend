@@ -40,6 +40,8 @@ def kakaoLogin(request):
         client_id = request.POST['clientID']
         redirect_uri = request.POST['redirectURI']
         code = request.POST['code']
+        uuid = request.POST.get('deviceID', None)
+        platform = request.POST.get('platform', None)
         # print(f"client_id = {client_id}")
         # print(f"redirect_uri = {redirect_uri}")
         # print(f"code = {code}")
@@ -71,12 +73,20 @@ def kakaoLogin(request):
             is_regist = False
 
             try:
-                User.objects.get(id=user_id)
+                user = User.objects.get(id=user_id)
+
+                if uuid:
+                    User.objects.filter(id=user_id).update(device_id=uuid, platform=platform)
+
                 is_regist = True
             except ObjectDoesNotExist:
-                # django model에 바로 데이터 추가 - https://jay-ji.tistory.com/19
-                user = User(id=user_id, email=user_email)
-                user.save()
+                # django model에 데이터 추가 - https://jay-ji.tistory.com/19
+                if uuid:
+                    user = User(id=user_id, email=user_email, device_id=uuid, platform=platform)
+                    user.save()
+                else:
+                    user = User(id=user_id, email=user_email)
+                    user.save()
             
             return JsonResponse({
                 'success': True,
