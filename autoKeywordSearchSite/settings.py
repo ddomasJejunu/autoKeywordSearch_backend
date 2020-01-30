@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'api',
     'web',
     'oauth',
+    'send',
     'temp',
     'ckeditor',
     'ckeditor_uploader',
