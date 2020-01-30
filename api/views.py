@@ -28,7 +28,7 @@ def create(request):
     }, json_dumps_params = { 'ensure_ascii': True })
 
 def check_list(request):
-    search_list = Keywordsearch.objects.filter(end_time < today, complete_time != null).values('no', 'search_url', 'end_time')
+    search_list = Keywordsearch.objects.filter(end_time < today, complete_time != null).values('no', 'search_url', 'keywords', 'end_time')
 
     for item in search_list:
         for key in item:
@@ -78,7 +78,7 @@ def complete(request):
         }, json_dumps_params = { 'ensure_ascii': True })
     except Exception:
         pass
-    
+
     return JsonResponse({
         'success': False,
     }, json_dumps_params = { 'ensure_ascii': True })
@@ -92,7 +92,7 @@ def update(request):
         end_time = datetime.strptime(request.POST['endTime'], "%Y-%m-%d %H:%M")
 
         if (datetime.now() < end_time):
-            count = Keywordsearch.objects.filter(no=no).update(search_url=search_url, keywords=keywords, end_time=end_time)
+            count = Keywordsearch.objects.filter(no=searching_no).update(search_url=search_url, keywords=keywords, end_time=end_time)
 
             return JsonResponse({
                 'success': True,

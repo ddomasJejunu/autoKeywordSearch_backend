@@ -23,6 +23,7 @@ urlpatterns = [
     path('', include('web.urls')),
     path('api/', include('api.urls')),
     path('oauth/', include('oauth.urls')),
+    path('send/', include('send.urls')),
     path('temp/', include('temp.urls')),
     path('ckeditor/', include('ckeditor_uploader.urls'))
 ]

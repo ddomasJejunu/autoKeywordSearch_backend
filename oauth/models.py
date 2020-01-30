@@ -7,6 +7,7 @@ class User(models.Model):
     email = models.CharField(max_length=255, blank=True, null=True)
     device_id = models.CharField(unique=True, max_length=16, blank=True, null=True)
     platform = models.IntegerField(blank=True, null=True)
+    access_token = models.CharField(max_length=54, blank=True, null=True)
 
     class Meta:
         managed = False

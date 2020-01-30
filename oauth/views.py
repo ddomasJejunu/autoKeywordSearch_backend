@@ -87,6 +87,8 @@ def kakaoLogin(request):
                 else:
                     user = User(id=user_id, email=user_email)
                     user.save()
+
+            User.objects.filter(id=user_id).update(access_token=access_token)
             
             return JsonResponse({
                 'success': True,

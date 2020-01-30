@@ -25,7 +25,7 @@ SECRET_KEY = 'trycb_%d4c25x2fr$jw%5(5v@!zik8s^(+j)+75-m!3xh-3x70'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'autokeywordsearch.pythonanywhere.com']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'autokeywordsearch.pythonanywhere.com', '172.19.8.34']
 
 
 # Application definition
@@ -84,10 +84,10 @@ WSGI_APPLICATION = 'autoKeywordSearchSite.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'autokeywordsearc$default',
-        'USER': 'autokeywordsearc',
-        'PASSWORD': 'ddomasJejunu',
-        'HOST': 'autokeywordsearch.mysql.pythonanywhere-services.com',
+        'NAME': 'autokeywordsearch',
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': '',
         'PORT': '',
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
