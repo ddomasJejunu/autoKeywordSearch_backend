@@ -27,6 +27,18 @@ def create(request):
         'success': False,
     }, json_dumps_params = { 'ensure_ascii': True })
 
+def check_list(request):
+    search_list = Keywordsearch.objects.filter(end_time < today, complete_time != null).values('no', 'search_url', 'end_time')
+
+    for item in search_list:
+        for key in item:
+            if type(item[key]) is datetime:
+                item[key] = item[key].strftime('%Y/%m/%d %H:%M')
+
+    return JsonResponse({
+        'searchList': search_list,
+    }, json_dumps_params = { 'ensure_ascii': True })
+
 @csrf_exempt
 def search_list(request):
     if request.method == 'POST':
@@ -54,6 +66,23 @@ def search_list(request):
         'success': False,
     }, json_dumps_params = { 'ensure_ascii': True })
 
+def complete(request):
+    try:
+        no = request.GET['no']
+        complete_time = request.GET['completeTime']
+
+        Keywordsearch.objects.filter(no=no).update(complete_time=datetime.strptime(complete_time, "%Y-%m-%d %H:%M"))
+
+        return JsonResponse({
+            'success': True,
+        }, json_dumps_params = { 'ensure_ascii': True })
+    except Exception:
+        pass
+    
+    return JsonResponse({
+        'success': False,
+    }, json_dumps_params = { 'ensure_ascii': True })
+
 @csrf_exempt
 def update(request):
     if request.method == 'POST':
@@ -63,7 +92,7 @@ def update(request):
         end_time = datetime.strptime(request.POST['endTime'], "%Y-%m-%d %H:%M")
 
         if (datetime.now() < end_time):
-            Keywordsearch.objects.filter(no=no).update(search_url=search_url, keywords=keywords, end_time=end_time)
+            count = Keywordsearch.objects.filter(no=no).update(search_url=search_url, keywords=keywords, end_time=end_time)
 
             return JsonResponse({
                 'success': True,
